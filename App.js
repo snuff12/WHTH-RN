@@ -1,44 +1,85 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
+  Pressable,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { theme } from "./colors";
+
+const STORAGE_KEY = "@toDos";
 
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
+  useEffect(() => {
+    loadToDos();
+  }, []);
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
-  const addToDo = () => {
+  const saveToDos = async (toSave) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const loadToDos = async () => {
+    try {
+      const s = await AsyncStorage.getItem(STORAGE_KEY);
+      setToDos(JSON.parse(s));
+    } catch (e) {
+      console.log(e);
+    }
+    console.log(s);
+  };
+
+  const addToDo = async () => {
     if (text === "") {
       return;
     }
     const newToDos = { ...toDos, [Date.now()]: { text, work: working } };
     setToDos(newToDos);
+    await saveToDos(newToDos);
     setText("");
   };
-  console.log(toDos);
+
+  const deleteToDo = async (key) => {
+    Alert.alert("Delete To Do", "Are you sure?", [
+      { text: "Cancel" },
+      {
+        text: "I'm sure",
+        onPress: () => {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+          setToDos(newToDos);
+          saveToDos(newToDos);
+        },
+      },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={work}>
+        <Pressable hitSlop={50} onPress={work}>
           <Text
             style={{ ...styles.btnText, color: working ? "white" : theme.grey }}
           >
             Work
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={travel}>
+        </Pressable>
+        <Pressable hitSlop={50} onPress={travel}>
           <Text
             style={{
               ...styles.btnText,
@@ -47,7 +88,7 @@ export default function App() {
           >
             Travel
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <TextInput
         onSubmitEditing={addToDo}
@@ -62,6 +103,9 @@ export default function App() {
             return (
               <View style={styles.toDo} key={key}>
                 <Text style={styles.toDoText}>{toDos[key].text}</Text>
+                <Pressable onPress={() => deleteToDo(key)} hitSlop={50}>
+                  <FontAwesome5 name="trash-alt" size={18} color="white" />
+                </Pressable>
               </View>
             );
         })}
@@ -99,6 +143,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   toDoText: {
     color: "white",
