@@ -1,0 +1,35 @@
+{
+  "background_color": "#ffffff",
+  "description": "React Native Work Hard Travel Hard app\n-Nomad Coders",
+  "display": "standalone",
+  "lang": "en",
+  "name": "WHTHapp",
+  "short_name": "WHTHapp",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait",
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "http://play.google.com/store/apps/details?id=com.sundo.WHTHapp",
+      "id": "com.sundo.WHTHapp"
+    }
+  ],
+  "prefer_related_applications": true,
+  "icons": [
+    {
+      "src": "/pwa/chrome-icon/chrome-icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/chrome-icon/chrome-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/chrome-icon/chrome-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
