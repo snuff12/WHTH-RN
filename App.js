@@ -9,6 +9,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -36,11 +37,10 @@ export default function App() {
   const loadToDos = async () => {
     try {
       const s = await AsyncStorage.getItem(STORAGE_KEY);
-      setToDos(JSON.parse(s));
+      if (s) setToDos(JSON.parse(s));
     } catch (e) {
       console.log(e);
     }
-    console.log(s);
   };
 
   const addToDo = async () => {
@@ -54,18 +54,28 @@ export default function App() {
   };
 
   const deleteToDo = async (key) => {
-    Alert.alert("Delete To Do", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "I'm sure",
-        onPress: () => {
-          const newToDos = { ...toDos };
-          delete newToDos[key];
-          setToDos(newToDos);
-          saveToDos(newToDos);
+    if (Platform.OS === "web") {
+      const ok = confirm("Do you want to delete this To Do?");
+      if (ok) {
+        const newToDos = { ...toDos };
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDos(newToDos);
+      }
+    } else {
+      Alert.alert("Delete To Do", "Are you sure?", [
+        { text: "Cancel" },
+        {
+          text: "I'm sure",
+          onPress: () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            saveToDos(newToDos);
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
 
   return (
@@ -74,7 +84,11 @@ export default function App() {
       <View style={styles.header}>
         <Pressable hitSlop={50} onPress={work}>
           <Text
-            style={{ ...styles.btnText, color: working ? "white" : theme.grey }}
+            style={{
+              fontSize: 38,
+              fontWeight: "600",
+              color: working ? "white" : theme.grey,
+            }}
           >
             Work
           </Text>
@@ -82,7 +96,8 @@ export default function App() {
         <Pressable hitSlop={50} onPress={travel}>
           <Text
             style={{
-              ...styles.btnText,
+              fontSize: 38,
+              fontWeight: "600",
               color: !working ? "white" : theme.grey,
             }}
           >
@@ -125,10 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 100,
   },
-  btnText: {
-    fontSize: 38,
-    fontWeight: "600",
-  },
+  btnText: {},
   input: {
     backgroundColor: "white",
     paddingVertical: 15,

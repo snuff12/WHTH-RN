@@ -23,10 +23,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.sundo.WHTHapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "React Native Work Hard Travel Hard app\n-Nomad Coders",
+    "githubUrl": "https://github.com/snuff12/WHTH-RN"
   }
 }
